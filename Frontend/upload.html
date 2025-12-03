@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Upload Music - Veestributes</title>
+    <link rel="stylesheet" href="upload.css">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎵</text></svg>">
+</head>
+<body>
+    <header class="header">
+        <nav class="navbar">
+            <div class="logo">
+                <a href="index.html"><h1>Veestributes</h1></a>
+            </div>
+            <ul class="nav-links">
+                <li><a href="dashboard.html">Dashboard</a></li>
+                <li><a href="upload.html" class="active">Upload</a></li>
+                <li><a href="#" id="logout-btn">Logout</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main class="upload-page">
+        <div class="upload-container">
+            <div class="upload-header">
+                <h1>Upload Your Music</h1>
+                <p>Distribute your tracks to millions of listeners worldwide</p>
+            </div>
+
+            <div class="upload-progress">
+                <div class="progress-steps">
+                    <div class="step active" data-step="1">
+                        <span class="step-number">1</span>
+                        <span class="step-label">Track Info</span>
+                    </div>
+                    <div class="step" data-step="2">
+                        <span class="step-number">2</span>
+                        <span class="step-label">Upload Files</span>
+                    </div>
+                    <div class="step" data-step="3">
+                        <span class="step-number">3</span>
+                        <span class="step-label">Distribution</span>
+                    </div>
+                    <div class="step" data-step="4">
+                        <span class="step-number">4</span>
+                        <span class="step-label">Review & Submit</span>
+                    </div>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress-fill" style="width: 25%"></div>
+                </div>
+            </div>
+
+            <form id="upload-form" class="upload-form">
+                <!-- Step 1: Track Information -->
+                <div class="upload-step active" data-step="1">
+                    <h2>Track Information</h2>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="track-title">Track Title *</label>
+                            <input type="text" id="track-title" name="title" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="artist-name">Artist Name *</label>
+                            <input type="text" id="artist-name" name="artist" required>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="album-title">Album Title</label>
+                            <input type="text" id="album-title" name="album">
+                        </div>
+                        <div class="form-group">
+                            <label for="genre">Genre *</label>
+                            <select id="genre" name="genre" required>
+                                <option value="">Select Genre</option>
+                                <option value="pop">Pop</option>
+                                <option value="rock">Rock</option>
+                                <option value="hip-hop">Hip Hop</option>
+                                <option value="electronic">Electronic</option>
+                                <option value="jazz">Jazz</option>
+                                <option value="classical">Classical</option>
+                                <option value="country">Country</option>
+                                <option value="other">Other</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="release-date">Release Date *</label>
+                        <input type="date" id="release-date" name="release_date" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="track-description">Description</label>
+                        <textarea id="track-description" name="description" rows="4" placeholder="Tell listeners about your track..."></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="track-tags">Tags (comma-separated)</label>
+                        <input type="text" id="track-tags" name="tags" placeholder="e.g. indie, guitar, vocals">
+                    </div>
+
+                    <button type="button" class="btn-primary next-step">Next: Upload Files</button>
+                </div>
+
+                <!-- Step 2: File Upload -->
+                <div class="upload-step" data-step="2">
+                    <h2>Upload Files</h2>
+
+                    <div class="file-upload-section">
+                        <h3>Audio File *</h3>
+                        <div class="file-upload-area" id="audio-upload">
+                            <div class="upload-placeholder">
+                                <div class="upload-icon">🎵</div>
+                                <p>Drag & drop your audio file here, or <span class="upload-link">browse</span></p>
+                                <small>Supported formats: MP3, WAV, FLAC (Max 500MB)</small>
+                            </div>
+                            <input type="file" id="audio-file" name="audio_file" accept="audio/*" required style="display: none;">
+                        </div>
+                        <div id="audio-file-info" class="file-info"></div>
+                    </div>
+
+                    <div class="file-upload-section">
+                        <h3>Artwork (Optional)</h3>
+                        <div class="file-upload-area" id="artwork-upload">
+                            <div class="upload-placeholder">
+                                <div class="upload-icon">🖼️</div>
+                                <p>Drag & drop your artwork here, or <span class="upload-link">browse</span></p>
+                                <small>JPG, PNG (Min 1400x1400px, Max 10MB)</small>
+                            </div>
+                            <input type="file" id="artwork-file" name="artwork" accept="image/*" style="display: none;">
+                        </div>
+                        <div id="artwork-file-info" class="file-info"></div>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="button" class="btn-secondary prev-step">Previous</button>
+                        <button type="button" class="btn-primary next-step">Next: Distribution</button>
+                    </div>
+                </div>
+
+                <!-- Step 3: Distribution Options -->
+                <div class="upload-step" data-step="3">
+                    <h2>Distribution Options</h2>
+
+                    <div class="distribution-options">
+                        <h3>Select Platforms</h3>
+                        <div class="platform-grid">
+                            <div class="platform-option">
+                                <input type="checkbox" id="spotify" name="platforms" value="spotify" checked>
+                                <label for="spotify">
+                                    <div class="platform-icon">🎵</div>
+                                    <span>Spotify</span>
+                                </label>
+                            </div>
+                            <div class="platform-option">
+                                <input type="checkbox" id="apple-music" name="platforms" value="apple_music" checked>
+                                <label for="apple-music">
+                                    <div class="platform-icon">🍎</div>
+                                    <span>Apple Music</span>
+                                </label>
+                            </div>
+                            <div class="platform-option">
+                                <input type="checkbox" id="youtube" name="platforms" value="youtube" checked>
+                                <label for="youtube">
+                                    <div class="platform-icon">📺</div>
+                                    <span>YouTube</span>
+                                </label>
+                            </div>
+                            <div class="platform-option">
+                                <input type="checkbox" id="tiktok" name="platforms" value="tiktok" checked>
+                                <label for="tiktok">
+                                    <div class="platform-icon">🎶</div>
+                                    <span>TikTok</span>
+                                </label>
+                            </div>
+                            <div class="platform-option">
+                                <input type="checkbox" id="deezer" name="platforms" value="deezer">
+                                <label for="deezer">
+                                    <div class="platform-icon">🎧</div>
+                                    <span>Deezer</span>
+                                </label>
+                            </div>
+                            <div class="platform-option">
+                                <input type="checkbox" id="amazon-music" name="platforms" value="amazon_music">
+                                <label for="amazon-music">
+                                    <div class="platform-icon">📦</div>
+                                    <span>Amazon Music</span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="pricing-summary">
+                        <h3>Pricing Summary</h3>
+                        <div class="pricing-breakdown">
+                            <div class="pricing-item">
+                                <span>Base Distribution Fee</span>
+                                <span>$19.99</span>
+                            </div>
+                            <div class="pricing-item">
+                                <span>Additional Platforms</span>
+                                <span id="additional-fee">$0.00</span>
+                            </div>
+                            <div class="pricing-total">
+                                <span>Total</span>
+                                <span id="total-price">$19.99</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="button" class="btn-secondary prev-step">Previous</button>
+                        <button type="button" class="btn-primary next-step">Next: Review</button>
+                    </div>
+                </div>
+
+                <!-- Step 4: Review & Submit -->
+                <div class="upload-step" data-step="4">
+                    <h2>Review & Submit</h2>
+
+                    <div class="review-section">
+                        <h3>Track Information</h3>
+                        <div id="review-track-info" class="review-item"></div>
+                    </div>
+
+                    <div class="review-section">
+                        <h3>Files</h3>
+                        <div id="review-files" class="review-item"></div>
+                    </div>
+
+                    <div class="review-section">
+                        <h3>Distribution</h3>
+                        <div id="review-distribution" class="review-item"></div>
+                    </div>
+
+                    <div class="review-section">
+                        <h3>Terms & Agreement</h3>
+                        <div class="terms-agreement">
+                            <label class="checkbox-label">
+                                <input type="checkbox" id="terms-accept" required>
+                                I agree to the <a href="#" target="_blank">Terms of Service</a> and <a href="#" target="_blank">Distribution Agreement</a>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="button" class="btn-secondary prev-step">Previous</button>
+                        <button type="submit" class="btn-primary" id="submit-upload">Submit for Distribution</button>
+                    </div>
+                </div>
+            </form>
+
+            <div class="upload-progress-modal" id="upload-progress-modal" style="display: none;">
+                <div class="modal-content">
+                    <h3>Uploading Your Track...</h3>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="upload-progress-fill"></div>
+                    </div>
+                    <p id="upload-status">Preparing files...</p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script src="script.js"></script>
+    <script>
+        // Upload page specific JavaScript
+        document.addEventListener('DOMContentLoaded', function() {
+            setupMultiStepForm();
+            setupFileUploads();
+            setupDistributionOptions();
+            setupReviewStep();
+            setupFormSubmission();
+            VeestributesUtils.setupFileUpload();
+        });
+
+        function setupMultiStepForm() {
+            const nextButtons = document.querySelectorAll('.next-step');
+            const prevButtons = document.querySelectorAll('.prev-step');
+            const steps = document.querySelectorAll('.upload-step');
+            const progressSteps = document.querySelectorAll('.step');
+            const progressFill = document.querySelector('.progress-fill');
+            let currentStep = 1;
+
+            nextButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    if (validateCurrentStep(currentStep)) {
+                        goToStep(currentStep + 1);
+                    }
+                });
+            });
+
+            prevButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    goToStep(currentStep - 1);
+                });
+            });
+
+            function goToStep(step) {
+                steps.forEach(s => s.classList.remove('active'));
+                progressSteps.forEach(s => s.classList.remove('active'));
+
+                document.querySelector(`.upload-step[data-step="${step}"]`).classList.add('active');
+                document.querySelector(`.step[data-step="${step}"]`).classList.add('active');
+
+                currentStep = step;
+                progressFill.style.width = `${(step / 4) * 100}%`;
+            }
+
+            function validateCurrentStep(step) {
+                const currentStepElement = document.querySelector(`.upload-step[data-step="${step}"]`);
+                const requiredFields = currentStepElement.querySelectorAll('[required]');
+                let isValid = true;
+
+                requiredFields.forEach(field => {
+                    if (!field.value.trim()) {
+                        showError(field, 'This field is required');
+                        isValid = false;
+                    } else {
+                        hideError(field);
+                    }
+                });
+
+                return isValid;
+            }
+        }
+
+        function setupFileUploads() {
+            setupDragAndDrop('audio-upload', 'audio-file', 'audio-file-info');
+            setupDragAndDrop('artwork-upload', 'artwork-file', 'artwork-file-info');
+        }
+
+        function setupDragAndDrop(areaId, inputId, infoId) {
+            const area = document.getElementById(areaId);
+            const input = document.getElementById(inputId);
+            const info = document.getElementById(infoId);
+            const placeholder = area.querySelector('.upload-placeholder');
+            const link = area.querySelector('.upload-link');
+
+            // Click to browse
+            link.addEventListener('click', () => input.click());
+
+            // Drag and drop events
+            area.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                area.classList.add('drag-over');
+            });
+
+            area.addEventListener('dragleave', () => {
+                area.classList.remove('drag-over');
+            });
+
+            area.addEventListener('drop', (e) => {
+                e.preventDefault();
+                area.classList.remove('drag-over');
+                const files = e.dataTransfer.files;
+                if (files.length > 0) {
+                    input.files = files;
+                    handleFileSelect(input, info);
+                }
+            });
+
+            // File input change
+            input.addEventListener('change', () => handleFileSelect(input, info));
+        }
+
+        function handleFileSelect(input, infoElement) {
+            const file = input.files[0];
+            if (file) {
+                const sizeMB = (file.size / 1024 / 1024).toFixed(2);
+                infoElement.innerHTML = `
+                    <div class="file-details">
+                        <p><strong>File:</strong> ${file.name}</p>
+                        <p><strong>Size:</strong> ${sizeMB} MB</p>
+                        <p><strong>Type:</strong> ${file.type || 'Unknown'}</p>
+                        <button type="button" class="remove-file" onclick="removeFile('${input.id}')">Remove</button>
+                    </div>
+                `;
+                infoElement.style.display = 'block';
+            }
+        }
+
+        function removeFile(inputId) {
+            const input = document.getElementById(inputId);
+            const info = document.getElementById(inputId.replace('-file', '-file-info'));
+            input.value = '';
+            info.innerHTML = '';
+            info.style.display = 'none';
+        }
+
+        function setupDistributionOptions() {
+            const platformCheckboxes = document.querySelectorAll('input[name="platforms"]');
+            const additionalFee = document.getElementById('additional-fee');
+            const totalPrice = document.getElementById('total-price');
+
+            platformCheckboxes.forEach(checkbox => {
+                checkbox.addEventListener('change', updatePricing);
+            });
+
+            function updatePricing() {
+                const basePrice = 19.99;
+                const additionalPlatforms = Array.from(platformCheckboxes).filter(cb => cb.checked && !cb.hasAttribute('checked')).length;
+                const additionalCost = additionalPlatforms * 2.99; // Example additional cost
+                const total = basePrice + additionalCost;
+
+                additionalFee.textContent = `$${additionalCost.toFixed(2)}`;
+                totalPrice.textContent = `$${total.toFixed(2)}`;
+            }
+        }
+
+        function setupReviewStep() {
+            // This will be called when reaching step 4
+        }
+
+        function setupFormSubmission() {
+            const form = document.getElementById('upload-form');
+            form.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const modal = document.getElementById('upload-progress-modal');
+                const progressFill = document.getElementById('upload-progress-fill');
+                const statusText = document.getElementById('upload-status');
+
+                modal.style.display = 'flex';
+
+                try {
+                    // Simulate upload progress
+                    for (let i = 0; i <= 100; i += 10) {
+                        await new Promise(resolve => setTimeout(resolve, 200));
+                        progressFill.style.width = `${i}%`;
+                        statusText.textContent = `Uploading... ${i}%`;
+                    }
+
+                    // Submit form data
+                    const formData = new FormData(form);
+                    const response = await VeestributesAPI.uploadTrack(formData);
+
+                    statusText.textContent = 'Upload complete! Redirecting...';
+                    setTimeout(() => {
+                        window.location.href = 'dashboard.html';
+                    }, 2000);
+
+                } catch (error) {
+                    console.error('Upload failed:', error);
+                    modal.style.display = 'none';
+                    showNotification('Upload failed. Please try again.', 'error');
+                }
+            });
+        }
+
+        // Global functions for onclick
+        window.removeFile = removeFile;
+    </script>
+</body>
+</html>

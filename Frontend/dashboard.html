@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Veestributes</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎵</text></svg>">
+</head>
+<body>
+    <header class="header">
+        <nav class="navbar">
+            <div class="logo">
+                <a href="index.html"><h1>Veestributes</h1></a>
+            </div>
+            <ul class="nav-links">
+                <li><a href="dashboard.html" class="active">Dashboard</a></li>
+                <li><a href="upload.html">Upload</a></li>
+                <li><a href="#" id="logout-btn">Logout</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main class="dashboard">
+        <div class="dashboard-container">
+            <div class="dashboard-header">
+                <h1>Welcome back, <span id="user-name">Artist</span>!</h1>
+                <p>Manage your music releases and track performance</p>
+            </div>
+
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-icon">🎵</div>
+                    <div class="stat-info">
+                        <h3 id="total-releases">0</h3>
+                        <p>Total Releases</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">▶️</div>
+                    <div class="stat-info">
+                        <h3 id="total-streams">0</h3>
+                        <p>Total Streams</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">💰</div>
+                    <div class="stat-info">
+                        <h3 id="total-earnings">$0.00</h3>
+                        <p>Total Earnings</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">📈</div>
+                    <div class="stat-info">
+                        <h3 id="monthly-growth">0%</h3>
+                        <p>Monthly Growth</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="dashboard-content">
+                <div class="content-section">
+                    <div class="section-header">
+                        <h2>Your Releases</h2>
+                        <a href="upload.html" class="btn-primary">Upload New Release</a>
+                    </div>
+                    <div class="releases-list" id="releases-list">
+                        <!-- Releases will be loaded dynamically -->
+                        <div class="no-releases">
+                            <p>You haven't uploaded any releases yet.</p>
+                            <a href="upload.html" class="btn-primary">Upload Your First Release</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="content-section">
+                    <h2>Recent Activity</h2>
+                    <div class="activity-list" id="activity-list">
+                        <!-- Activity items will be loaded dynamically -->
+                        <div class="no-activity">
+                            <p>No recent activity.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="content-section">
+                    <h2>Analytics Overview</h2>
+                    <div class="analytics-chart">
+                        <canvas id="streams-chart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="script.js"></script>
+    <script>
+        // Dashboard-specific JavaScript
+        document.addEventListener('DOMContentLoaded', function() {
+            loadDashboardData();
+            setupLogout();
+        });
+
+        async function loadDashboardData() {
+            try {
+                const [userData, releasesData, analyticsData] = await Promise.all([
+                    VeestributesAPI.getUserProfile(),
+                    VeestributesAPI.getReleases(),
+                    VeestributesAPI.getAnalytics()
+                ]);
+
+                updateUserInfo(userData);
+                updateStats(analyticsData);
+                updateReleasesList(releasesData);
+                updateActivityList(analyticsData);
+                renderAnalyticsChart(analyticsData);
+            } catch (error) {
+                console.error('Error loading dashboard data:', error);
+                showNotification('Failed to load dashboard data', 'error');
+            }
+        }
+
+        function updateUserInfo(userData) {
+            document.getElementById('user-name').textContent = userData.name || 'Artist';
+        }
+
+        function updateStats(data) {
+            document.getElementById('total-releases').textContent = data.totalReleases || 0;
+            document.getElementById('total-streams').textContent = data.totalStreams || 0;
+            document.getElementById('total-earnings').textContent = `$${data.totalEarnings || 0}`;
+            document.getElementById('monthly-growth').textContent = `${data.monthlyGrowth || 0}%`;
+        }
+
+        function updateReleasesList(releases) {
+            const releasesList = document.getElementById('releases-list');
+            if (releases.length === 0) return;
+
+            releasesList.innerHTML = releases.map(release => `
+                <div class="release-item">
+                    <div class="release-info">
+                        <h3>${release.title}</h3>
+                        <p>${release.artist}</p>
+                        <span class="release-status ${release.status}">${release.status}</span>
+                    </div>
+                    <div class="release-stats">
+                        <span>${release.streams} streams</span>
+                        <span>$${release.earnings}</span>
+                    </div>
+                    <div class="release-actions">
+                        <button class="btn-secondary" onclick="viewRelease(${release.id})">View</button>
+                        <button class="btn-secondary" onclick="editRelease(${release.id})">Edit</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function updateActivityList(data) {
+            const activityList = document.getElementById('activity-list');
+            const activities = data.recentActivity || [];
+
+            if (activities.length === 0) return;
+
+            activityList.innerHTML = activities.map(activity => `
+                <div class="activity-item">
+                    <div class="activity-icon">${activity.icon}</div>
+                    <div class="activity-content">
+                        <p>${activity.description}</p>
+                        <span class="activity-time">${activity.time}</span>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function renderAnalyticsChart(data) {
+            const ctx = document.getElementById('streams-chart').getContext('2d');
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: data.chartLabels || [],
+                    datasets: [{
+                        label: 'Streams',
+                        data: data.chartData || [],
+                        borderColor: 'var(--primary-color)',
+                        backgroundColor: 'rgba(255, 107, 107, 0.1)',
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+        }
+
+        function setupLogout() {
+            document.getElementById('logout-btn').addEventListener('click', function(e) {
+                e.preventDefault();
+                if (confirm('Are you sure you want to logout?')) {
+                    // Clear session and redirect
+                    localStorage.removeItem('userToken');
+                    window.location.href = 'auth.html';
+                }
+            });
+        }
+
+        function viewRelease(id) {
+            // Navigate to release details page (placeholder)
+            console.log('View release:', id);
+        }
+
+        function editRelease(id) {
+            // Navigate to edit release page (placeholder)
+            console.log('Edit release:', id);
+        }
+    </script>
+</body>
+</html>

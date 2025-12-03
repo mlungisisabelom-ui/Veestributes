@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login / Sign Up - Veestributes</title>
+    <link rel="stylesheet" href="auth.css">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎵</text></svg>">
+</head>
+<body>
+    <header class="header">
+        <nav class="navbar">
+            <div class="logo">
+                <a href="index.html"><h1>Veestributes</h1></a>
+            </div>
+            <ul class="nav-links">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="index.html#features">Features</a></li>
+                <li><a href="index.html#pricing">Pricing</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main class="auth-container">
+        <div class="auth-wrapper">
+            <div class="auth-tabs">
+                <button class="auth-tab active" data-tab="login">Login</button>
+                <button class="auth-tab" data-tab="signup">Sign Up</button>
+            </div>
+
+            <div class="auth-forms">
+                <!-- Login Form -->
+                <form id="login-form" class="auth-form active" data-form="login">
+                    <h2>Welcome Back</h2>
+                    <p>Sign in to your Veestributes account</p>
+
+                    <div class="form-group">
+                        <label for="login-email">Email</label>
+                        <input type="email" id="login-email" name="email" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="login-password">Password</label>
+                        <input type="password" id="login-password" name="password" required>
+                    </div>
+
+                    <div class="form-options">
+                        <label class="checkbox-label">
+                            <input type="checkbox" name="remember"> Remember me
+                        </label>
+                        <a href="#" class="forgot-password">Forgot password?</a>
+                    </div>
+
+                    <button type="submit" class="btn-primary">Sign In</button>
+
+                    <div class="social-login">
+                        <p>Or sign in with</p>
+                        <div class="social-buttons">
+                            <button type="button" class="social-btn google">Google</button>
+                            <button type="button" class="social-btn facebook">Facebook</button>
+                        </div>
+                    </div>
+                </form>
+
+                <!-- Signup Form -->
+                <form id="signup-form" class="auth-form" data-form="signup">
+                    <h2>Join Veestributes</h2>
+                    <p>Create your account to start distributing music</p>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="signup-firstname">First Name</label>
+                            <input type="text" id="signup-firstname" name="firstname" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="signup-lastname">Last Name</label>
+                            <input type="text" id="signup-lastname" name="lastname" required>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="signup-email">Email</label>
+                        <input type="email" id="signup-email" name="email" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="signup-password">Password</label>
+                        <input type="password" id="signup-password" name="password" required minlength="8">
+                        <small>Password must be at least 8 characters long</small>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="signup-confirm-password">Confirm Password</label>
+                        <input type="password" id="signup-confirm-password" name="confirm_password" required>
+                    </div>
+
+                    <div class="form-options">
+                        <label class="checkbox-label">
+                            <input type="checkbox" name="terms" required> I agree to the <a href="#" target="_blank">Terms of Service</a> and <a href="#" target="_blank">Privacy Policy</a>
+                        </label>
+                    </div>
+
+                    <button type="submit" class="btn-primary">Create Account</button>
+
+                    <div class="social-login">
+                        <p>Or sign up with</p>
+                        <div class="social-buttons">
+                            <button type="button" class="social-btn google">Google</button>
+                            <button type="button" class="social-btn facebook">Facebook</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </main>
+
+    <script src="script.js"></script>
+    <script>
+        // Auth-specific JavaScript
+        document.addEventListener('DOMContentLoaded', function() {
+            setupAuthTabs();
+            setupPasswordConfirmation();
+            setupAuthForms();
+        });
+
+        function setupAuthTabs() {
+            const tabs = document.querySelectorAll('.auth-tab');
+            const forms = document.querySelectorAll('.auth-form');
+
+            tabs.forEach(tab => {
+                tab.addEventListener('click', () => {
+                    const targetForm = tab.dataset.tab;
+
+                    // Remove active class from all tabs and forms
+                    tabs.forEach(t => t.classList.remove('active'));
+                    forms.forEach(f => f.classList.remove('active'));
+
+                    // Add active class to clicked tab and corresponding form
+                    tab.classList.add('active');
+                    document.querySelector(`[data-form="${targetForm}"]`).classList.add('active');
+                });
+            });
+        }
+
+        function setupPasswordConfirmation() {
+            const signupForm = document.getElementById('signup-form');
+            const passwordInput = document.getElementById('signup-password');
+            const confirmPasswordInput = document.getElementById('signup-confirm-password');
+
+            confirmPasswordInput.addEventListener('input', function() {
+                if (this.value !== passwordInput.value) {
+                    showError(this, 'Passwords do not match');
+                } else {
+                    hideError(this);
+                }
+            });
+        }
+
+        function setupAuthForms() {
+            // Login form submission
+            const loginForm = document.getElementById('login-form');
+            loginForm.addEventListener('submit', async function(e) {
+                e.preventDefault();
+
+                const email = document.getElementById('login-email').value;
+                const password = document.getElementById('login-password').value;
+
+                try {
+                    const response = await VeestributesAPI.login({ email, password });
+
+                    if (response.success) {
+                        // Store auth token
+                        localStorage.setItem('authToken', response.token || 'dummy-token');
+                        localStorage.setItem('user', JSON.stringify(response.user));
+
+                        showNotification('Login successful! Redirecting...', 'success');
+                        setTimeout(() => {
+                            window.location.href = 'dashboard.html';
+                        }, 1500);
+                    }
+                } catch (error) {
+                    showNotification('Login failed. Please check your credentials.', 'error');
+                }
+            });
+
+            // Signup form submission
+            const signupForm = document.getElementById('signup-form');
+            signupForm.addEventListener('submit', async function(e) {
+                e.preventDefault();
+
+                const firstname = document.getElementById('signup-firstname').value;
+                const lastname = document.getElementById('signup-lastname').value;
+                const email = document.getElementById('signup-email').value;
+                const password = document.getElementById('signup-password').value;
+                const confirmPassword = document.getElementById('signup-confirm-password').value;
+
+                if (password !== confirmPassword) {
+                    showNotification('Passwords do not match', 'error');
+                    return;
+                }
+
+                try {
+                    const response = await VeestributesAPI.signup({
+                        firstname,
+                        lastname,
+                        email,
+                        password
+                    });
+
+                    if (response.success) {
+                        // Store auth token
+                        localStorage.setItem('authToken', response.token || 'dummy-token');
+                        localStorage.setItem('user', JSON.stringify(response.user));
+
+                        showNotification('Account created successfully! Redirecting...', 'success');
+                        setTimeout(() => {
+                            window.location.href = 'dashboard.html';
+                        }, 1500);
+                    }
+                } catch (error) {
+                    showNotification('Signup failed. Please try again.', 'error');
+                }
+            });
+        }
+    </script>
+</body>
+</html>
